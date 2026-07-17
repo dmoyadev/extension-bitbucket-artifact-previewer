@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Bitbucket Artifact Previewer",
+  "version": "1.1",
+  "description": "Opens Bitbucket pipeline artifacts directly in the browser.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads"
+  ],
+  "host_permissions": [
+    "https://bitbucket.org/*",
+    "https://api.bitbucket.org/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://bitbucket.org/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
