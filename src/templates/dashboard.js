@@ -10,32 +10,166 @@ export function openDashboard(files, initialPath) {
       <head>
         <title>Artifact Explorer</title>
         <style>
-          body { margin: 0; display: flex; height: 100vh; font-family: -apple-system, sans-serif; background: #fff; overflow: hidden; }
-          #sidebar { width: 300px; background: #f4f5f7; border-right: 1px solid #dfe1e6; display: flex; flex-direction: column; }
-          .sidebar-header { padding: 15px; background: #ebecf0; font-weight: bold; color: #1F1F21; border-bottom: 1px solid #dfe1e6; }
-          #file-tree { flex: 1; overflow-y: auto; padding: 10px; font-size: 13px; color: #42526e; }
-          #main { flex: 1; display: flex; flex-direction: column; background: #ebecf0; color: #1F1F21; }
-          .topbar { padding: 10px 15px; background: #fff; border-bottom: 1px solid #dfe1e6; color: #5e6c84; font-size: 14px; display: flex; align-items: center; }
-          #current-file { font-family: monospace; background: #ebecf0; padding: 2px 6px; border-radius: 3px; margin-left: 10px; }
-          iframe { flex: 1; width: 100%; height: 100%; border: none; background: #fff; }
-          ul { list-style: none; padding-left: 15px; margin: 0; }
-          #file-tree > ul { padding-left: 0; }
-          li { margin: 2px 0; }
-          .folder { cursor: pointer; font-weight: 600; padding: 4px; color: #1F1F21; display: block; }
-          .file { padding: 4px 4px 4px 20px; cursor: pointer; display: block; border-radius: 3px; }
-          .file:hover { background: #dfe1e6; }
-          .file.active { background: #7e7d7d; color: white; }
-          
+          body {
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+          }
+        
+          #sidebar {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            background: #fafafa;
+            border-right: 1px solid #e5e7eb;
+          }
+        
+          .sidebar-header {
+            padding: 16px;
+            font-weight: 700;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+          }
+        
+          #file-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            font-size: 13px;
+            color: #4b5563;
+          }
+        
+          #main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f3f4f6;
+          }
+        
+          .topbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+          }
+        
+          #current-file {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: #374151;
+          }
+        
+          iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #fff;
+          }
+        
+          ul {
+            list-style: none;
+            margin: 0;
+            padding-left: 16px;
+          }
+        
+          #file-tree > ul {
+            padding-left: 0;
+          }
+        
+          li {
+            margin: 2px 0;
+          }
+        
+          .folder {
+            display: block;
+            padding: 5px;
+            font-weight: 600;
+            color: #111827;
+            cursor: pointer;
+          }
+        
+          .file {
+            display: block;
+            padding: 5px 5px 5px 20px;
+            border-radius: 6px;
+            color: #4b5563;
+            cursor: pointer;
+            transition: background .15s;
+          }
+        
+          .file:hover {
+            background: #e5e7eb;
+          }
+        
+          .file.active {
+            background: #4b5563;
+            color: #fff;
+          }
+        
           @media (prefers-color-scheme: dark) {
-            body { background: #1F1F21; color: #f4f5f7; }
-            #sidebar { background: #1F1F21; border-right: 1px solid #37373a; }
-            .sidebar-header { background: #2f2f33; color: #f4f5f7; border-bottom: 1px solid #37373a; }
-            .topbar { background: #1F1F21; border-bottom: 1px solid #2f2f33; color: #b3bac5; }
-            #current-file { background: #2f2f33; color: #fff; }
-            .file { color: #b3bac5; }
-            .file:hover { background: #2f2f33; }
-            .file.active { background: #7e7d7d; color: #fff; }
-            .folder { color: #fff; }
+            body {
+              background: #111827;
+              color: #f3f4f6;
+            }
+        
+            #sidebar {
+              background: #1f2937;
+              border-right-color: #374151;
+            }
+        
+            .sidebar-header {
+              background: #273244;
+              border-bottom-color: #374151;
+              color: #f3f4f6;
+            }
+        
+            #main {
+              background: #111827;
+            }
+        
+            .topbar {
+              background: #1f2937;
+              border-bottom-color: #374151;
+              color: #9ca3af;
+            }
+        
+            #current-file {
+              background: #273244;
+              border-color: #374151;
+              color: #f3f4f6;
+            }
+        
+            iframe {
+              background: #fff;
+            }
+        
+            .folder {
+              color: #f3f4f6;
+            }
+        
+            .file {
+              color: #d1d5db;
+            }
+        
+            .file:hover {
+              background: #374151;
+            }
+        
+            .file.active {
+              background: #6b7280;
+              color: #fff;
+            }
           }
         </style>
       </head>

@@ -1,4 +1,5 @@
 import { openDashboard } from '../templates/dashboard.js';
+import { openJunitReport } from '../templates/junit.js';
 import { extractTar, buildVirtualFileSystem, getPageNonce } from './fileSystem.js';
 
 function capturePreviewUrl() {
@@ -39,14 +40,33 @@ async function handlePreviewClick(previewBtn, nativeDownloadBtn, artifactPath) {
     const decompressedStream = response.body.pipeThrough(new DecompressionStream('gzip'));
     const tarBuffer = await (await new Response(decompressedStream).blob()).arrayBuffer();
 
+    // fileUrls is an object like: { "test-report.xml": "blob:http://...", ... }
     const fileUrls = buildVirtualFileSystem(extractTar(tarBuffer), getPageNonce() ? `nonce="${getPageNonce()}"` : '');
     const fileKeys = Object.keys(fileUrls);
 
     if (fileKeys.length === 1) {
-      return window.open(fileUrls[fileKeys[0]], '_blank');
+      const fileName = fileKeys[0];
+      const fileUrl = fileUrls[fileName];
+
+      // ROUTE A: It's a single XML file (Likely JUnit)
+      if (fileName.toLowerCase().endsWith('.xml')) {
+        previewBtn.innerText = '⏳ Parsing XML...';
+
+        // Fetch the raw XML string directly out of our in-memory Blob
+        const blobResponse = await fetch(fileUrl);
+        const rawXml = await blobResponse.text();
+
+        // Pass to our custom JUnit UI
+        openJunitReport(rawXml, fileName);
+        return;
+      }
+
+      // ROUTE B: It's a single file, but not an XML file (e.g., a single .txt log)
+      return window.open(fileUrl, '_blank');
     }
 
-    openDashboard(fileUrls)
+    // ROUTE C: It's multiple files (e.g., Istanbul Coverage HTML reports)
+    openDashboard(fileUrls);
 
   } catch (error) {
     console.error('Artifact Preview Extension Error:', error);
