@@ -1,4 +1,8 @@
-export const getPageNonce = () => document.querySelector('script[nonce]')?.nonce || '';
+export function getPageNonce() {
+  return document.querySelector('script[nonce]')?.nonce
+    || document.scripts[0]?.nonce
+    || '';
+}
 
 const MIME_TYPES = {
   html: 'text/html;charset=utf-8',
@@ -9,14 +13,14 @@ const MIME_TYPES = {
   svg: 'image/svg+xml'
 };
 
-export const getMimeType = (filename) => {
+export function getMimeType(filename) {
   const ext = filename.split('.').pop().toLowerCase();
   if (MIME_TYPES[ext]) return MIME_TYPES[ext];
   if (['jpeg', 'jpg', 'gif', 'png'].includes(ext)) return `image/${ext}`;
   return 'text/plain;charset=utf-8';
-};
+}
 
-export const extractTar = (arrayBuffer) => {
+export function extractTar(arrayBuffer) {
   const files = {};
   const view = new Uint8Array(arrayBuffer);
   const decoder = new TextDecoder('utf-8');
@@ -26,14 +30,14 @@ export const extractTar = (arrayBuffer) => {
   while (offset < arrayBuffer.byteLength - 512) {
     if (view[offset] === 0 && view[offset + 1] === 0) break;
 
-    const readString = (start, length) => {
+    function readString(start, length) {
       let str = '';
       for (let i = 0; i < length; i++) {
         if (view[offset + start + i] === 0) break;
         str += String.fromCharCode(view[offset + start + i]);
       }
       return str;
-    };
+    }
 
     let prefix = readString(345, 155);
     let name = readString(0, 100);
@@ -63,7 +67,7 @@ export const extractTar = (arrayBuffer) => {
     offset += Math.ceil(size / 512) * 512;
   }
   return files;
-};
+}
 
 const resolveRelativePath = (basePath, relativeUrl) => {
   const stack = basePath ? basePath.split('/') : [];
@@ -75,7 +79,7 @@ const resolveRelativePath = (basePath, relativeUrl) => {
   return stack.join('/');
 };
 
-export const buildVirtualFileSystem = (extractedFiles, nonceAttr) => {
+export function buildVirtualFileSystem(extractedFiles, nonceAttr) {
   const fileUrls = {};
   const htmlFiles = {};
   const assetContent = {};
@@ -109,4 +113,4 @@ export const buildVirtualFileSystem = (extractedFiles, nonceAttr) => {
   }
 
   return fileUrls;
-};
+}

@@ -1,23 +1,25 @@
-import { generateDashboardHtml } from '../templates/dashboard.js';
+import { openDashboard } from '../templates/dashboard.js';
 import { extractTar, buildVirtualFileSystem, getPageNonce } from './fileSystem.js';
 
-const capturePreviewUrl = () => new Promise((resolve, reject) => {
-  const timeoutId = setTimeout(() => {
-    chrome.runtime.onMessage.removeListener(listener);
-    reject(new Error('Timeout waiting for preview URL.'));
-  }, 10000);
-
-  const listener = (message) => {
-    if (message.action === 'preview_url_captured') {
-      clearTimeout(timeoutId);
+function capturePreviewUrl() {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
       chrome.runtime.onMessage.removeListener(listener);
-      resolve(message.url);
-    }
-  };
-  chrome.runtime.onMessage.addListener(listener);
-});
+      reject(new Error('Timeout waiting for preview URL.'));
+    }, 10000);
 
-const handlePreviewClick = async (previewBtn, nativeDownloadBtn, artifactPath) => {
+    const listener = (message) => {
+      if (message.action === 'preview_url_captured') {
+        clearTimeout(timeoutId);
+        chrome.runtime.onMessage.removeListener(listener);
+        resolve(message.url);
+      }
+    };
+    chrome.runtime.onMessage.addListener(listener);
+  });
+}
+
+async function handlePreviewClick(previewBtn, nativeDownloadBtn, artifactPath) {
   const originalText = previewBtn.innerText;
   previewBtn.innerText = '⏳ Intercepting...';
   previewBtn.disabled = true;
@@ -44,13 +46,7 @@ const handlePreviewClick = async (previewBtn, nativeDownloadBtn, artifactPath) =
       return window.open(fileUrls[fileKeys[0]], '_blank');
     }
 
-    const matchedFileName = fileKeys.find(p => p.includes(artifactPath)) || '';
-    const dashboardBlob = new Blob(
-      [generateDashboardHtml(fileUrls, matchedFileName, getPageNonce())],
-      { type: 'text/html;charset=utf-8' }
-    );
-
-    window.open(URL.createObjectURL(dashboardBlob), '_blank');
+    openDashboard(fileUrls)
 
   } catch (error) {
     console.error('Artifact Preview Extension Error:', error);
@@ -59,9 +55,9 @@ const handlePreviewClick = async (previewBtn, nativeDownloadBtn, artifactPath) =
     previewBtn.innerText = originalText;
     previewBtn.disabled = false;
   }
-};
+}
 
-export const injectPreviewButtons = (btn) => {
+export function injectPreviewButtons(btn) {
   btn.classList.add('bb-preview-added');
 
   const artifactPath = btn.closest('header')?.querySelector('span[title]')?.getAttribute('title')?.split('/').pop();
@@ -96,4 +92,4 @@ export const injectPreviewButtons = (btn) => {
   });
 
   btn.closest('div[role="presentation"]')?.insertAdjacentElement('beforebegin', previewBtn);
-};
+}
