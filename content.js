@@ -16,35 +16,30 @@ function extractTar(arrayBuffer) {
   const files = {};
   let offset = 0;
   const view = new Uint8Array(arrayBuffer);
-  let nextLongName = null; // Stores paths that exceed 100 characters
+  let nextLongName = null;
 
   while (offset < arrayBuffer.byteLength - 512) {
-    if (view[offset] === 0 && view[offset + 1] === 0) break; // Two null bytes mark the end
+    if (view[offset] === 0 && view[offset + 1] === 0) break;
 
-    // 1. Read UStar prefix (offset 345, 155 bytes)
     let prefix = '';
     for (let i = 345; i < 500; i++) {
       if (view[offset + i] === 0) break;
       prefix += String.fromCharCode(view[offset + i]);
     }
 
-    // 2. Read standard name (offset 0, 100 bytes)
     let name = '';
     for (let i = 0; i < 100; i++) {
       if (view[offset + i] === 0) break;
       name += String.fromCharCode(view[offset + i]);
     }
 
-    // Combine prefix and name if it's a standard UStar split path
     if (prefix) name = prefix + (prefix.endsWith('/') ? '' : '/') + name;
 
-    // 3. Apply GNU LongLink or PAX path if we captured it in the previous block
     if (nextLongName) {
       name = nextLongName;
-      nextLongName = null; // Reset for the next file
+      nextLongName = null;
     }
 
-    // 4. Read file size
     let sizeStr = '';
     for (let i = 124; i < 136; i++) {
       if (view[offset + i] === 0 || view[offset + i] === 32) break;
@@ -52,29 +47,23 @@ function extractTar(arrayBuffer) {
     }
     const size = parseInt(sizeStr.trim(), 8) || 0;
 
-    // 5. Read typeflag (tells us what kind of block this is)
-    const typeflag = String.fromCharCode(view[offset + 156]);
+    const flagType = String.fromCharCode(view[offset + 156]);
 
-    offset += 512; // Skip over the header to the actual data block
+    offset += 512;
 
-    // 6. Process the block based on its typeflag
-    if (typeflag === 'L') {
-      // GNU tar LongLink format: Data block contains the real, long file name
+    if (flagType === 'L') {
       nextLongName = new TextDecoder('utf-8').decode(arrayBuffer.slice(offset, offset + size)).replace(/\0/g, '');
 
-    } else if (typeflag === 'x') {
-      // POSIX pax extended header: Data block contains key=value pairs
+    } else if (flagType === 'x') {
       const paxData = new TextDecoder('utf-8').decode(arrayBuffer.slice(offset, offset + size));
-      const pathMatch = paxData.match(/path=([^\n]+)/); // Extract the "path=..." variable
+      const pathMatch = paxData.match(/path=([^\n]+)/);
       if (pathMatch) nextLongName = pathMatch[1];
 
-    } else if (size > 0 && (typeflag === '0' || typeflag === '\0')) {
-      // Standard file: Safe to save
+    } else if (size > 0 && (flagType === '0' || flagType === '\0')) {
       const cleanName = name.startsWith('./') ? name.substring(2) : name;
       files[cleanName] = arrayBuffer.slice(offset, offset + size);
     }
 
-    // Jump to the next header (Data blocks are always padded to 512 bytes)
     offset += Math.ceil(size / 512) * 512;
   }
   return files;
@@ -86,15 +75,12 @@ function generateJUnitHtml(xmlString) {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(xmlString, "text/xml");
 
-  // 1. Check if the browser's XML parser threw an error
   if (xmlDoc.querySelector('parsererror')) {
-    return null; // Abort and fallback to raw XML
+    return null;
   }
 
-  // 2. Globally find all testcases, ignoring how testsuites are nested
   const cases = xmlDoc.querySelectorAll('testcase');
 
-  // 3. Fallback to raw XML if no testcases exist in this file
   if (cases.length === 0) {
     return null;
   }
@@ -183,9 +169,6 @@ function generateJUnitHtml(xmlString) {
 }
 
 function generateDashboardHtml(fileUrls, initialPath) {
-  // 1. SECURE NONCE EXTRACTION:
-  // Loop through all scripts and read the internal JS property,
-  // bypassing Chrome's HTML attribute hiding.
   let pageNonce = '';
   const scripts = document.getElementsByTagName('script');
   for (let i = 0; i < scripts.length; i++) {
@@ -260,14 +243,12 @@ function generateDashboardHtml(fileUrls, initialPath) {
           }
         });
 
-        // 1. NEW: Recursively flatten single-child folders
         function flattenTree(node) {
           for (const key in node) {
             if (typeof node[key] === 'object') {
-              flattenTree(node[key]); // Dive deep first
+              flattenTree(node[key]);
               
               const keys = Object.keys(node[key]);
-              // If this folder has exactly one child, and that child is another folder:
               if (keys.length === 1 && typeof node[key][keys[0]] === 'object') {
                 const childFolder = keys[0];
                 const newName = key + '/' + childFolder;
@@ -279,25 +260,19 @@ function generateDashboardHtml(fileUrls, initialPath) {
         }
         flattenTree(tree);
 
-        // 2. RECURSIVE RENDER (Modified for "expanded" logic)
-        // RECURSIVE RENDER WITH FOLDER-FIRST SORTING
         function renderTree(node, container) {
           const ul = document.createElement('ul');
           
-          // 1. NEW: Custom sorting logic
           const sortedEntries = Object.entries(node).sort((a, b) => {
             const aIsFolder = typeof a[1] === 'object';
             const bIsFolder = typeof b[1] === 'object';
             
-            // If one is folder and other is file, folder comes first
             if (aIsFolder && !bIsFolder) return -1;
             if (!aIsFolder && bIsFolder) return 1;
             
-            // Otherwise, sort alphabetically
             return a[0].localeCompare(b[0]);
           });
 
-          // 2. Iterate over the sorted entries
           for (const [name, value] of sortedEntries) {
             const li = document.createElement('li');
             if (typeof value === 'string') {
@@ -326,13 +301,11 @@ function generateDashboardHtml(fileUrls, initialPath) {
         
         renderTree(tree, document.getElementById('file-tree'));
 
-        // INTERACTION HANDLING
         const iframe = document.getElementById('preview-frame');
         const currentFileLabel = document.getElementById('current-file');
         let activeEl = null;
 
         document.getElementById('file-tree').addEventListener('click', (e) => {
-          // Toggle Folder
           if (e.target.closest('.folder')) {
             const folderEl = e.target.closest('.folder');
             const sub = folderEl.nextElementSibling;
@@ -343,7 +316,6 @@ function generateDashboardHtml(fileUrls, initialPath) {
             folderEl.querySelector('.icon-folder').textContent = isCollapsed ? '📂' : '📁';
           }
           
-          // Select File
           if (e.target.classList.contains('file')) {
             const path = e.target.dataset.path;
             if (activeEl) activeEl.classList.remove('active');
@@ -355,20 +327,16 @@ function generateDashboardHtml(fileUrls, initialPath) {
           }
         });
 
-        // AUTO-LOAD
         const allPaths = Object.keys(files);
         
-        // Find all index.html files
         const indexFiles = allPaths.filter(p => p.endsWith('index.html'));
         
-        // Sort index files by number of slashes (shallower = better)
         indexFiles.sort((a, b) => {
           const depthA = a.split('/').length;
           const depthB = b.split('/').length;
           return depthA - depthB;
         });
 
-        // Use the shallowest index.html, or fall back to the shallowest file overall
         const allPathsSorted = [...allPaths].sort((a, b) => a.split('/').length - b.split('/').length);
         const bestEntry = indexFiles[0] || allPathsSorted[0];
 
@@ -382,12 +350,10 @@ function generateDashboardHtml(fileUrls, initialPath) {
             iframe.src = files[targetPath];
             currentFileLabel.innerText = targetPath;
             
-            // Expand parent folders to reveal the automatically opened file
             let parent = targetEl.parentElement;
             while (parent && parent.id !== 'file-tree') {
               if (parent.style.display === 'none') {
                 parent.style.display = 'block';
-                // Flip the folder icons to "open" state
                 const folderSpan = parent.previousElementSibling;
                 if (folderSpan && folderSpan.classList.contains('folder')) {
                     folderSpan.querySelector('.icon-toggle').textContent = '▼';
@@ -417,10 +383,9 @@ function resolveRelativePath(basePath, relativeUrl) {
 
 function buildVirtualFileSystem(extractedFiles) {
   const fileUrls = {};
-  const htmlFiles = {}; // Store raw HTML content to rewrite
-  const assetContent = {}; // Store raw CSS/JS content to inline
+  const htmlFiles = {};
+  const assetContent = {};
 
-  // PASS 1: Generate blobs and collect raw content for inlining
   for (const [path, data] of Object.entries(extractedFiles)) {
     let mimeType = getMimeType(path);
     const decoder = new TextDecoder('utf-8');
@@ -429,7 +394,6 @@ function buildVirtualFileSystem(extractedFiles) {
       assetContent[path] = decoder.decode(data);
     }
 
-    // Store HTML raw text for rewriting
     if (mimeType.includes('text/html')) {
       htmlFiles[path] = decoder.decode(data);
     }
@@ -438,7 +402,6 @@ function buildVirtualFileSystem(extractedFiles) {
     fileUrls[path] = URL.createObjectURL(blob);
   }
 
-  // PASS 2: Inline CSS/JS into HTML files to bypass CSP
   for (const [path, htmlText] of Object.entries(htmlFiles)) {
     const basePath = path.split('/').slice(0, -1).join('/');
 
@@ -453,7 +416,6 @@ function buildVirtualFileSystem(extractedFiles) {
     const nonceAttr = pageNonce ? `nonce="${pageNonce}"` : '';
 
     let rewrittenHtml = htmlText
-      // 1. Inline CSS: Find <link rel="stylesheet" href="...">
       .replace(/<link[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["'][^>]*>/gi, (match, url) => {
         const absolutePath = resolveRelativePath(basePath, url);
         if (assetContent[absolutePath]) {
@@ -461,17 +423,14 @@ function buildVirtualFileSystem(extractedFiles) {
         }
         return match;
       })
-      // 2. Inline JS: Find <script src="..."></script>
       .replace(/<script[^>]*src=["']([^"']+)["'][^>]*><\/script>/gi, (match, url) => {
         const absolutePath = resolveRelativePath(basePath, url);
         if (assetContent[absolutePath]) {
-          // Inject the nonce here so the browser trusts our inlined code!
           return `<script ${nonceAttr}>${assetContent[absolutePath]}</script>`;
         }
         return match;
       });
 
-    // Replace the blob with our new inlined HTML
     URL.revokeObjectURL(fileUrls[path]);
     const newBlob = new Blob([rewrittenHtml], { type: 'text/html;charset=utf-8' });
     fileUrls[path] = URL.createObjectURL(newBlob);
@@ -504,7 +463,6 @@ async function handlePreviewClick(previewBtn, nativeDownloadBtn, artifactPath) {
         const fileUrls = buildVirtualFileSystem(extractedFiles);
         const fileKeys = Object.keys(fileUrls);
 
-        // QoL Fix: If the archive only has 1 file, skip the dashboard and open it directly
         if (fileKeys.length === 1) {
           window.open(fileUrls[fileKeys[0]], '_blank');
           return;
@@ -553,7 +511,6 @@ async function handlePreviewClick(previewBtn, nativeDownloadBtn, artifactPath) {
 // 4. UI INJECTOR
 
 function injectPreviewButtons(btn) {
-  // Determine if Bitbucket is currently in dark mode
   const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   const bgColor = isDark ? 'transparent' : '#ebecf0';
@@ -568,7 +525,6 @@ function injectPreviewButtons(btn) {
   const pathNode = header.querySelector('span[title]');
   if (!pathNode) return;
 
-  // Get the exact filename the user is clicking on
   const artifactPath = pathNode.getAttribute('title').split('/').pop();
 
   const previewBtn = document.createElement('button');
