@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bitbucket Artifact Previewer</title>
+  <style>
+    :root {
+      --primary-color: #0052CC; /* Bitbucket Blue */
+      --accent-color: #FF8B00;  /* Warning/Accent Orange */
+      --donate-color: #FFDD00;  /* Buy me a coffee Yellow */
+      --donate-text: #000000;
+      --bg-color: #ffffff;
+      --text-color: #333238;
+      --border-color: #dbdbdb;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-family);
+      width: 300px;
+      margin: 0;
+      padding: 16px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    header h2 {
+      font-size: 16px;
+      margin: 0;
+      color: var(--text-color);
+    }
+
+    header svg {
+      max-width: 32px;
+      max-height: 32px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: background-color 0.2s, transform 0.1s;
+      box-sizing: border-box;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #0043A6;
+    }
+
+    .btn-donate {
+      background-color: var(--donate-color);
+      color: var(--donate-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+      border: 1px solid #E5C700;
+    }
+
+    .btn-donate:hover {
+      background-color: #E6C700;
+    }
+
+    #status {
+      height: 14px;
+      font-size: 11px;
+      margin: -4px 0 0 0;
+      text-align: center;
+      font-weight: 500;
+      color: #2e7d32; /* Success green */
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    pre {
+      margin: 4px 0;
+      background: #f4f5f7;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #dfe1e6;
+    }
+
+    footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+    }
+
+    footer a {
+      text-decoration: none;
+      color: var(--primary-color);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <svg width="650px" height="650px" viewBox="0 0 650 650" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+      <path d="M21.0935431,33.2180976 L628.899817,33.3272014 C630.10745,33.311497 631.312464,33.4004888 632.50438,33.5941769 C643.857704,35.4342136 651.569792,46.121084 649.728216,57.4649234 L561.319507,599.733951 C559.669162,609.910427 550.812312,617.343861 540.496347,617.214692 L116.376069,617.214692 C102.628435,617.097825 90.9502811,607.138594 88.6764727,593.593515 L0.270383022,57.3602272 C0.0765329971,56.1693072 -0.0125332304,54.9626829 0.00141611256,53.7560585 C0.139196635,43.092606 8.28235523,34.4061006 18.6452368,33.3288155 L20.7456948,33.2164836 Z" id="path-r9ht5uvaae-1"></path>
+      <linearGradient x1="108.66211%" y1="30.1891103%" x2="46.9519774%" y2="65.8368158%" id="linearGradient-r9ht5uvaae-2">
+        <stop stop-color="#0052CC" offset="18%"></stop>
+        <stop stop-color="#2684FF" offset="100%"></stop>
+      </linearGradient>
+    </defs>
+    <g id="Página-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g id="Frame" xlink:href="#path-r9ht5uvaae-1">
+        <g id="Grupo" stroke-width="1" fill-rule="evenodd" transform="translate(0, 33.2163)">
+          <path d="M21.0935431,0.00174773827 C9.59352137,-0.14565428 0.149881655,9.04929448 0.00141611256,20.5397087 C-0.0125332304,21.746333 0.0765329971,22.9529574 0.270383022,24.1438773 L88.6764727,560.377166 C90.9502811,573.922244 102.628435,583.881475 116.376069,583.998342 L540.496347,583.998342 C550.812312,584.127511 559.669162,576.694077 561.319507,566.517601 L649.728216,24.2485736 C651.569792,12.9047341 643.857704,2.21786372 632.50438,0.377827004 C631.312464,0.184138929 630.10745,0.0951471104 628.899817,0.110851549 L21.0935431,0.00174773827 Z M441.144865,426.68376 L187.259696,389.686508 L221.743284,149.245002 L441.144865,188.204585 L441.144865,426.68376 Z" id="Forma" fill="#2684FF" fill-rule="nonzero"></path>
+          <path d="M621.072468,195.958287 L472.598623,195.958287 L418.153479,407.497936 L256.403455,416.426591 L98.0362853,576.552737 C103.097343,580.926423 109.552025,583.357994 116.24247,583.416453 L540.126984,583.416453 C550.43509,583.546447 559.286702,576.11563 560.937046,565.949624 L621.072468,195.958287 Z" id="Trazado" fill="url(#linearGradient-r9ht5uvaae-2)"></path>
+        </g>
+        <polygon id="Trazado" fill="#FFFFFF" fill-rule="evenodd" points="199.898111 209.285714 441.144865 209.285714 441.144865 446.442115 194.010682 440.714286"></polygon>
+        <path d="M325.425,145 C260.493298,145 208.49972,174.571429 170.649681,209.767857 C133.040725,244.723214 107.887727,286.428571 95.9139352,315.116071 C93.2620216,321.464286 93.2620216,328.535714 95.9139352,334.883929 C107.887727,363.571429 133.040725,405.357143 170.649681,440.232143 C208.49972,475.348214 260.493298,505 325.425,505 C390.356702,505 442.35028,475.428571 480.200319,440.232143 C517.809275,405.276786 542.962273,363.571429 554.936065,334.883929 C557.587978,328.535714 557.587978,321.464286 554.936065,315.116071 C542.962273,286.428571 517.809275,244.642857 480.200319,209.767857 C442.35028,174.651786 390.356702,145 325.425,145 Z M209.705135,325 C209.705135,261.116071 261.537991,209.285714 325.425,209.285714 C389.312009,209.285714 441.144865,261.116071 441.144865,325 C441.144865,388.883929 389.312009,440.714286 325.425,440.714286 C261.537991,440.714286 209.705135,388.883929 209.705135,325 Z M325.425,273.571429 C325.425,301.9375 302.361388,325 273.993949,325 C264.752432,325 256.073442,322.589286 248.519507,318.25 C247.715896,327.008929 248.439146,336.008929 250.849976,344.928571 C261.859435,386.071429 304.209691,410.5 345.354532,399.491071 C386.499373,388.482143 410.929122,346.133929 399.919663,304.991071 C390.115619,268.267857 355.319298,244.883929 318.674675,248.098214 C322.933808,255.571429 325.425,264.25 325.425,273.571429 Z" id="Forma" fill="#1F1F21" fill-rule="nonzero"></path>
+      </g>
+    </g>
+  </svg>
+  <h2>Bitbucket Artifact Previewer</h2>
+</header>
+
+<a href="https://www.buymeacoffee.com/dmoyadev" target="_blank" class="btn btn-donate">
+  <span>💸</span> less "thanks" and more "take this 2€"
+</a>
+
+<footer>
+  Made with 💚 by <a href="https://github.com/dmoyadev" target="_blank"><strong>Daniel Moya</strong></a>
+</footer>
+
+<script src="popup.js"></script>
+</body>
+</html>

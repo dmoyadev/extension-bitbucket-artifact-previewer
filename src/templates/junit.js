@@ -1,4 +1,4 @@
-export function openJunitReport(rawJunitContent, filename) {
+export async function openJunitReport(rawJunitContent, filename) {
   // 1. Open an empty window under the Bitbucket origin to bypass CSP restrictions
   const reportWindow = window.open('', '_blank');
 
