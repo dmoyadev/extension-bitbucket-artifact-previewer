@@ -1,11 +1,21 @@
 # 👁️ Bitbucket Artifact Previewer
 
+<p align="center">
+  <img style="width: 90%" src="/screenshots/marquee-tile.jpg" width="500" alt="GitLab MR Previewer in action with notes" />
+</p>
+
 This Chrome extension adds a **Preview** button to Bitbucket artifact downloads so you can inspect reports without the usual download-open-delete loop.
 
 - **Save time:** Open artifacts directly instead of saving them locally first.
 - **Read reports faster:** View HTML dashboards and JUnit results in a cleaner, purpose-built interface.
 - **Stay in context:** Browse folders, files, and internal links inside generated reports without leaving the preview.
 - **No manual setup:** Install it once and use it from the Bitbucket artifacts page.
+
+<p align="center">
+	<img style="width: 30%" src="/screenshots/slide-1-large.png" width="500" alt="GitLab MR Previewer in action on Google Chat" />
+  <img style="width: 30%" src="/screenshots/slide-2-large.png" width="500" alt="GitLab MR Previewer in action with notes" />
+  <img style="width: 30%" src="/screenshots/slide-3-large.png" width="500" alt="GitLab MR Previewer in action with notes" />
+</p>
 
 ## ✨ What it supports today
 
@@ -48,7 +58,7 @@ Install it as an unpacked extension in Chrome:
 
 ## 🤝 Contributing
 
-If this extension saves you time, consider supporting it with a coffee: https://www.buymeacoffee.com/dmoyadev
+If this extension saves you time, consider [supporting it with a coffee](https://www.buymeacoffee.com/dmoyadev).
 
 
 Pull requests and ideas are welcome, especially for:
