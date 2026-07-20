@@ -1,5 +1,11 @@
 import { attachDashboardLogic } from './dashboard.js';
 
+/**
+ * Opens a new window and loads the dashboard template, injecting the provided files and initial path.
+ * @param {{ [key: string]: string }} files - An object mapping file paths to their corresponding Blob URLs.
+ * @param {string} initialPath - The initial file path to display in the iframe. If not provided, defaults to the first index.html or the first file in the list.
+ * @returns {Promise<void>} - A promise that resolves when the dashboard is successfully opened and initialized.
+ */
 export async function openDashboard(files, initialPath) {
   const win = window.open('', '_blank');
   if (!win) {

@@ -1,3 +1,9 @@
+/**
+ * Attach the logic for the dashboard page, including the file tree and iframe navigation.
+ * @param {typeof window} win - The window object of the dashboard page.
+ * @param {{ [key: string]: string }} files - An object mapping file paths to their corresponding Blob URLs.
+ * @param {string} initialPath - The initial file path to display in the iframe. If not provided, defaults to the first index.html or the first file in the list.
+ */
 export function attachDashboardLogic(win, files, initialPath) {
   const doc = win.document;
   const iframe = doc.querySelector('iframe');
@@ -23,7 +29,7 @@ export function attachDashboardLogic(win, files, initialPath) {
     });
   });
 
-  const flattenTree = (node) => {
+  function flattenTree(node) {
     for (const key in node) {
       if (typeof node[key] === 'object') {
         flattenTree(node[key]);
@@ -34,7 +40,7 @@ export function attachDashboardLogic(win, files, initialPath) {
         }
       }
     }
-  };
+  }
   flattenTree(tree);
 
   function renderTree(node, container) {
@@ -103,7 +109,6 @@ export function attachDashboardLogic(win, files, initialPath) {
     }
   });
 
-  // --- THE INTERNAL ROUTING FIX ---
   // Intercepts link clicks inside Istanbul reports to calculate the next Blob
   iframe.addEventListener('load', () => {
     try {

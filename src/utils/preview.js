@@ -92,10 +92,6 @@ async function handlePreviewClick(previewBtn, nativeDownloadBtn) {
  * @returns {HTMLButtonElement}
  */
 function createPreviewButton() {
-  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const bgColor = isDark ? 'transparent' : '#ebecf0';
-  const hoverColor = isDark ? '#CECED912' : '#dfe1e6';
-
   const btn = document.createElement('button');
   btn.innerText = '👁️ Preview';
   btn.style.cssText = `
@@ -103,16 +99,16 @@ function createPreviewButton() {
     padding: 0 12px;
     font-size: 14px;
     cursor: pointer;
-    background-color: ${bgColor};
-    color: ${isDark ? '#A9ABAF' : '#1F1F21'};
+    background-color: transparent;
+    color: #A9ABAF;
     border: none;
     border-radius: 3px;
     font-weight: 500;
     height: 32px;
   `;
 
-  btn.addEventListener('mouseenter', () => btn.style.backgroundColor = hoverColor);
-  btn.addEventListener('mouseleave', () => btn.style.backgroundColor = bgColor);
+  btn.addEventListener('mouseenter', () => btn.style.backgroundColor = '#CECED912');
+  btn.addEventListener('mouseleave', () => btn.style.backgroundColor = 'transparent');
 
   return btn;
 }
