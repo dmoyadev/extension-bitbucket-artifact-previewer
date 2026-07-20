@@ -13,108 +13,83 @@
       --text-color: #333238;
       --border-color: #dbdbdb;
       --font-family: "Segoe UI", Roboto, sans-serif;
-    }
 
-    body {
-      font-family: var(--font-family), sans-serif;
-      width: 300px;
-      margin: 0;
-      padding: 16px;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-    }
+      body {
+        font-family: var(--font-family), sans-serif;
+        width: 300px;
+        margin: 0;
+        padding: 16px;
+        background-color: var(--bg-color);
+        color: var(--text-color);
 
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
+        header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          margin-bottom: 16px;
 
-    header h2 {
-      font-size: 16px;
-      margin: 0;
-      color: var(--text-color);
-    }
+          h2 {
+            font-size: 16px;
+            margin: 0;
+            color: var(--text-color);
+          }
+        }
 
-    header svg {
-      max-width: 32px;
-      max-height: 32px;
-    }
+        .btn {
+          width: 100%;
+          padding: 10px;
+          border: none;
+          border-radius: 4px;
+          font-weight: 600;
+          font-size: 13px;
+          cursor: pointer;
+          text-align: center;
+          text-decoration: none;
+          transition: background-color 0.2s, transform 0.1s;
+          box-sizing: border-box;
 
-    .btn {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 4px;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      transition: background-color 0.2s, transform 0.1s;
-      box-sizing: border-box;
-    }
+          &:active {
+            transform: translateY(1px);
+          }
+        }
 
-    .btn:active {
-      transform: translateY(1px);
-    }
+        .btn-donate {
+          background-color: var(--donate-color);
+          color: var(--donate-text);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          margin-top: 8px;
+          border: 1px solid #E5C700;
 
-    .btn-donate {
-      background-color: var(--donate-color);
-      color: var(--donate-text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 8px;
-      border: 1px solid #E5C700;
-    }
+          &:hover {
+            background-color: #E6C700;
+          }
+        }
+      }
 
-    .btn-donate:hover {
-      background-color: #E6C700;
-    }
+      footer {
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 1px solid #eee;
+        text-align: center;
+        font-size: 11px;
+        color: #999;
 
-    pre {
-      margin: 4px 0;
-      background: #f4f5f7;
-      padding: 6px;
-      border-radius: 4px;
-      border: 1px solid #dfe1e6;
-    }
-
-    footer {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid #eee;
-      text-align: center;
-      font-size: 11px;
-      color: #999;
-    }
-
-    footer a {
-      text-decoration: none;
-      color: var(--primary-color);
+        a {
+          text-decoration: none;
+          color: var(--primary-color);
+        }
+      }
     }
   </style>
 </head>
 
 <body>
   <header>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 650">
-      <defs>
-        <linearGradient id="g" x1="108.662%" y1="30.189%" x2="46.952%" y2="65.837%">
-          <stop offset=".18" stop-color="#0052CC"/>
-          <stop offset="1" stop-color="#2684FF"/>
-        </linearGradient>
-      </defs>
-
-      <path fill="#2684FF" d="M21.094 33.218c-11.5-.147-20.944 9.048-21.093 20.538-.014 1.206.075 2.413.269 3.604l88.406 536.233c2.274 13.545 13.952 23.505 27.7 23.621h424.12c10.316.13 19.173-7.304 20.823-17.48l88.409-542.269c1.842-11.344-5.87-22.031-17.224-23.871a21.46 21.46 0 0 0-3.605-.267z"/>
-      <path fill="url(#g)" d="M621.072 229.175H472.6l-54.445 211.54-161.75 8.929L98.036 609.769a28.8 28.8 0 0 0 18.206 6.864h423.885c10.308.13 19.16-7.301 20.81-17.467z"/>
-      <polygon fill="#fff" points="199.898 209.286 441.145 209.286 441.145 446.442 194.011 440.714"/>
-      <path fill="#1F1F21" d="M325.425 145c-64.932 0-116.925 29.571-154.775 64.768-37.609 34.955-62.762 76.66-74.736 105.348a24.7 24.7 0 0 0 0 19.768c11.974 28.687 37.127 70.473 74.736 105.348C208.5 475.348 260.493 505 325.425 505s116.925-29.571 154.775-64.768c37.609-34.955 62.762-76.66 74.736-105.348a24.7 24.7 0 0 0 0-19.768c-11.974-28.687-37.127-70.473-74.736-105.348C442.35 174.652 390.357 145 325.425 145zm0 295.714c-63.887 0-115.72-51.83-115.72-115.714s51.833-115.714 115.72-115.714S441.145 261.116 441.145 325s-51.833 115.714-115.72 115.714zm0-167.143c0 28.366-23.064 51.429-51.431 51.429a51.1 51.1 0 0 1-25.474-6.75c-.804 8.759-.08 17.759 2.33 26.679 11.01 41.143 53.36 65.571 94.505 54.562s65.574-53.357 54.565-94.5c-9.804-36.723-44.6-60.107-81.245-56.893a51.4 51.4 0 0 1 6.75 25.473z"/>
-    </svg>
+    <img src="../icons/icon32.png" alt="Bitbucket Artifact Previewer Logo" />
     <h2>Bitbucket Artifact Previewer</h2>
   </header>
 

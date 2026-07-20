@@ -1,197 +1,16 @@
-export function openDashboard(files, initialPath) {
-  // 1. Open an empty tab (bypasses popup blockers because it's triggered by a user click)
-  const win = window.open('', '_blank');
-  if (!win) return alert('Pop-up blocked. Please allow pop-ups for Bitbucket.');
-
-  // 2. Write the HTML structure WITHOUT any <script> tags
-  win.document.write(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Artifact Explorer</title>
-        <style>
-          body {
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: #f3f4f6;
-            color: #111827;
-          }
-        
-          #sidebar {
-            width: 300px;
-            display: flex;
-            flex-direction: column;
-            background: #fafafa;
-            border-right: 1px solid #e5e7eb;
-          }
-        
-          .sidebar-header {
-            padding: 16px;
-            font-weight: 700;
-            background: #fff;
-            border-bottom: 1px solid #e5e7eb;
-          }
-        
-          #file-tree {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px;
-            font-size: 13px;
-            color: #4b5563;
-          }
-        
-          #main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #f3f4f6;
-          }
-        
-          .topbar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 16px;
-            background: #fff;
-            border-bottom: 1px solid #e5e7eb;
-            color: #6b7280;
-            font-size: 14px;
-          }
-        
-          #current-file {
-            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-            background: #f3f4f6;
-            border: 1px solid #e5e7eb;
-            padding: 3px 8px;
-            border-radius: 6px;
-            color: #374151;
-          }
-        
-          iframe {
-            flex: 1;
-            width: 100%;
-            border: none;
-            background: #fff;
-          }
-        
-          ul {
-            list-style: none;
-            margin: 0;
-            padding-left: 16px;
-          }
-        
-          #file-tree > ul {
-            padding-left: 0;
-          }
-        
-          li {
-            margin: 2px 0;
-          }
-        
-          .folder {
-            display: block;
-            padding: 5px;
-            font-weight: 600;
-            color: #111827;
-            cursor: pointer;
-          }
-        
-          .file {
-            display: block;
-            padding: 5px 5px 5px 20px;
-            border-radius: 6px;
-            color: #4b5563;
-            cursor: pointer;
-            transition: background .15s;
-          }
-        
-          .file:hover {
-            background: #e5e7eb;
-          }
-        
-          .file.active {
-            background: #4b5563;
-            color: #fff;
-          }
-        
-          @media (prefers-color-scheme: dark) {
-            body {
-              background: #111827;
-              color: #f3f4f6;
-            }
-        
-            #sidebar {
-              background: #1f2937;
-              border-right-color: #374151;
-            }
-        
-            .sidebar-header {
-              background: #273244;
-              border-bottom-color: #374151;
-              color: #f3f4f6;
-            }
-        
-            #main {
-              background: #111827;
-            }
-        
-            .topbar {
-              background: #1f2937;
-              border-bottom-color: #374151;
-              color: #9ca3af;
-            }
-        
-            #current-file {
-              background: #273244;
-              border-color: #374151;
-              color: #f3f4f6;
-            }
-        
-            iframe {
-              background: #fff;
-            }
-        
-            .folder {
-              color: #f3f4f6;
-            }
-        
-            .file {
-              color: #d1d5db;
-            }
-        
-            .file:hover {
-              background: #374151;
-            }
-        
-            .file.active {
-              background: #6b7280;
-              color: #fff;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div id="sidebar">
-          <div class="sidebar-header">📦 Archive Explorer</div>
-          <div id="file-tree"></div>
-        </div>
-        <div id="main">
-          <div class="topbar">Previewing: <span id="current-file">Select a file</span></div>
-          <iframe id="preview-frame"></iframe>
-        </div>
-      </body>
-    </html>
-  `);
-  win.document.close();
-
-  // 3. ATTACH LOGIC DIRECTLY (CSP Immunity + Internal Routing Fix)
+export function attachDashboardLogic(win, files, initialPath) {
   const doc = win.document;
-  const iframe = doc.getElementById('preview-frame');
+  const iframe = doc.querySelector('iframe');
   const currentFileLabel = doc.getElementById('current-file');
   let activeEl = null;
+
+  // Get the icon url
+  const iconUrl = chrome.runtime.getURL("icons/icon16.png");
+  doc.querySelector('#logo').src = iconUrl;
+  const link = doc.createElement('link');
+  link.rel = 'icon';
+  link.href = iconUrl;
+  doc.head.appendChild(link);
 
   // Build the folder tree data structure
   const tree = {};
@@ -218,7 +37,7 @@ export function openDashboard(files, initialPath) {
   };
   flattenTree(tree);
 
-  const renderTree = (node, container) => {
+  function renderTree(node, container) {
     const ul = doc.createElement('ul');
     Object.entries(node).sort(([nameA, valA], [nameB, valB]) => {
       const isDirA = typeof valA === 'object';
@@ -239,10 +58,10 @@ export function openDashboard(files, initialPath) {
       ul.appendChild(li);
     });
     container.appendChild(ul);
-  };
+  }
   renderTree(tree, doc.getElementById('file-tree'));
 
-  const activateSidebarItem = (path) => {
+  function activateSidebarItem(path) {
     const targetEl = doc.querySelector(`.file[data-path="${path}"]`);
     if (!targetEl) return;
 
@@ -264,7 +83,7 @@ export function openDashboard(files, initialPath) {
       parent = parent.parentElement;
     }
     targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  };
+  }
 
   doc.getElementById('file-tree').addEventListener('click', (e) => {
     const folderEl = e.target.closest('.folder');
@@ -337,4 +156,4 @@ export function openDashboard(files, initialPath) {
     iframe.src = files[targetPath];
     activateSidebarItem(targetPath);
   }
-};
+}

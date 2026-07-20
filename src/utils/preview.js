@@ -1,4 +1,4 @@
-import { openDashboard } from '../templates/dashboard.js';
+import { openDashboard } from '../templates/dashboard/openDashboard.js';
 import { openJunitReport } from '../templates/junit/openJUnitReport.js';
 import { extractTar, buildVirtualFileSystem, getPageNonce } from './fileSystem.js';
 
