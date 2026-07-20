@@ -2,6 +2,10 @@ import { openDashboard } from '../templates/dashboard.js';
 import { openJunitReport } from '../templates/junit.js';
 import { extractTar, buildVirtualFileSystem, getPageNonce } from './fileSystem.js';
 
+/**
+ * Captures the preview URL sent from the background script.
+ * @returns {Promise<unknown>}
+ */
 function capturePreviewUrl() {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
@@ -20,7 +24,13 @@ function capturePreviewUrl() {
   });
 }
 
-async function handlePreviewClick(previewBtn, nativeDownloadBtn, artifactPath) {
+/**
+ * Called when the preview button is clicked.
+ * Intercepts the download, decompresses the artifact, and opens the appropriate preview.
+ * @param previewBtn
+ * @param nativeDownloadBtn
+ */
+async function handlePreviewClick(previewBtn, nativeDownloadBtn) {
   const originalText = previewBtn.innerText;
   previewBtn.innerText = '⏳ Intercepting...';
   previewBtn.disabled = true;
@@ -77,19 +87,18 @@ async function handlePreviewClick(previewBtn, nativeDownloadBtn, artifactPath) {
   }
 }
 
-export function injectPreviewButtons(btn) {
-  btn.classList.add('bb-preview-added');
-
-  const artifactPath = btn.closest('header')?.querySelector('span[title]')?.getAttribute('title')?.split('/').pop();
-  if (!artifactPath) return;
-
+/**
+ * Creates a styled "Preview" button with hover effects.
+ * @returns {HTMLButtonElement}
+ */
+function createPreviewButton() {
   const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const bgColor = isDark ? 'transparent' : '#ebecf0';
   const hoverColor = isDark ? '#CECED912' : '#dfe1e6';
 
-  const previewBtn = document.createElement('button');
-  previewBtn.innerText = '👁️ Preview';
-  previewBtn.style.cssText = `
+  const btn = document.createElement('button');
+  btn.innerText = '👁️ Preview';
+  btn.style.cssText = `
     margin-right: 8px;
     padding: 0 12px;
     font-size: 14px;
@@ -102,14 +111,33 @@ export function injectPreviewButtons(btn) {
     height: 32px;
   `;
 
-  previewBtn.addEventListener('mouseenter', () => previewBtn.style.backgroundColor = hoverColor);
-  previewBtn.addEventListener('mouseleave', () => previewBtn.style.backgroundColor = bgColor);
+  btn.addEventListener('mouseenter', () => btn.style.backgroundColor = hoverColor);
+  btn.addEventListener('mouseleave', () => btn.style.backgroundColor = bgColor);
 
+  return btn;
+}
+
+/**
+ * Injects a "Preview" button next to the native download button for artifacts.
+ * @param {HTMLButtonElement} downloadBtn - The native download button element.
+ */
+export function injectPreviewButtons(downloadBtn) {
+  downloadBtn.classList.add('bb-preview-added');
+
+  const artifactPath = downloadBtn.closest('header')
+    ?.querySelector('span[title]')
+    ?.getAttribute('title')
+    ?.split('/')
+    .pop();
+  if (!artifactPath) return;
+
+  const previewBtn = createPreviewButton();
   previewBtn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    void handlePreviewClick(previewBtn, btn, artifactPath);
+    void handlePreviewClick(previewBtn, downloadBtn, artifactPath);
   });
 
-  btn.closest('div[role="presentation"]')?.insertAdjacentElement('beforebegin', previewBtn);
+  downloadBtn.closest('div[role="presentation"]')
+    ?.insertAdjacentElement('beforebegin', previewBtn);
 }

@@ -1,13 +1,17 @@
-export async function openJunitReport(rawJunitContent, filename) {
-  // 1. Open an empty window under the Bitbucket origin to bypass CSP restrictions
+/**
+ * Opens a new window and renders a JUnit report from the provided raw XML content.
+ * @param {string} rawJunitContent - The raw XML content of the JUnit report.
+ * @param {string} filename - The name of the JUnit report file (used for the window title).
+ * @returns {null} When there was an error parsing the XML or no test cases were found.
+ */
+export function openJunitReport(rawJunitContent, filename) {
   const reportWindow = window.open('', '_blank');
 
   if (!reportWindow) {
     console.error("Popup blocked! Please allow popups for Bitbucket.");
-    return;
+    return null;
   }
 
-  // 2. Parse XML data
   const xmlDoc = new DOMParser().parseFromString(rawJunitContent, 'text/xml');
   if (xmlDoc.querySelector('parsererror')) {
     reportWindow.document.write('<h2>Error: Invalid XML file</h2>');
@@ -20,8 +24,8 @@ export async function openJunitReport(rawJunitContent, filename) {
     return null;
   }
 
-  // 3. Extract stats and generate HTML cases
-  let totalFailures = 0, totalSkipped = 0;
+  let totalFailures = 0
+  let totalSkipped = 0;
 
   const htmlCases = cases.map(tc => {
     const name = tc.getAttribute('name') || 'Unnamed test';
@@ -34,7 +38,11 @@ export async function openJunitReport(rawJunitContent, filename) {
     if (failure) { status = 'failed'; totalFailures++; }
     else if (skipped) { status = 'skipped'; totalSkipped++; }
 
-    const icon = status === 'failed' ? '❌' : status === 'skipped' ? '⚠️' : '✅';
+    const icon = status === 'failed'
+      ? '❌'
+      : status === 'skipped'
+        ? '⚠️'
+        : '✅';
     const failureHtml = failure
       ? `<div class="failure-msg">${failure.getAttribute('message') || ''}\n\n${failure.textContent || ''}</div>`
       : '';
@@ -50,7 +58,6 @@ export async function openJunitReport(rawJunitContent, filename) {
   const totalTests = cases.length;
   const totalPassed = totalTests - totalFailures - totalSkipped;
 
-  // 4. Define UI Styles
   const styles = `
     <style>
       body {
@@ -210,10 +217,9 @@ export async function openJunitReport(rawJunitContent, filename) {
     </style>
   `;
 
-  // 5. Write the final HTML document
   reportWindow.document.write(`
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
       <head>
         <title>JUnit Report: ${filename}</title>
         ${styles}

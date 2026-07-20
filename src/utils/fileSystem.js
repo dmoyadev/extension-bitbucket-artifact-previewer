@@ -1,3 +1,9 @@
+/**
+ * Get the nonce attribute from the first script tag in the document.
+ * `nonce` stands for "number used once" and is a security feature to prevent certain types of attacks.
+ * We get it to inject our own scripts into the page safely.
+ * @returns {string} The nonce value or an empty string if not found.
+ */
 export function getPageNonce() {
   return document.querySelector('script[nonce]')?.nonce
     || document.scripts[0]?.nonce
@@ -10,16 +16,30 @@ const MIME_TYPES = {
   js: 'application/javascript;charset=utf-8',
   json: 'application/json;charset=utf-8',
   xml: 'text/xml;charset=utf-8',
-  svg: 'image/svg+xml'
+  svg: 'image/svg+xml',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  gif: 'image/gif',
 };
 
+/**
+ * Get the MIME type based on the file extension.
+ * @param {string} filename - The name of the file to determine the MIME type for.
+ * @returns {typeof MIME_TYPES[keyof MIME_TYPES] | 'text/plain;charset=utf-8'} - The corresponding MIME type or a default type if not found.
+ */
 export function getMimeType(filename) {
-  const ext = filename.split('.').pop().toLowerCase();
-  if (MIME_TYPES[ext]) return MIME_TYPES[ext];
-  if (['jpeg', 'jpg', 'gif', 'png'].includes(ext)) return `image/${ext}`;
+  const extension = filename.split('.').pop().toLowerCase();
+  if (MIME_TYPES[extension]) return MIME_TYPES[extension];
+
   return 'text/plain;charset=utf-8';
 }
 
+/**
+ * Extract files from a TAR archive represented as an ArrayBuffer.
+ * @param {ArrayBuffer} arrayBuffer - The ArrayBuffer containing the TAR archive data.
+ * @returns {{ [key: string]: ArrayBuffer }} - An object where keys are file paths and values are ArrayBuffers of the file contents.
+ */
 export function extractTar(arrayBuffer) {
   const files = {};
   const view = new Uint8Array(arrayBuffer);
@@ -69,7 +89,13 @@ export function extractTar(arrayBuffer) {
   return files;
 }
 
-const resolveRelativePath = (basePath, relativeUrl) => {
+/**
+ * Resolve a relative URL against a base path to get an absolute path.
+ * @param {string} basePath - The base path to resolve against.
+ * @param {string} relativeUrl - The relative URL to resolve.
+ * @returns {string} - The resolved absolute path.
+ */
+function resolveRelativePath(basePath, relativeUrl) {
   const stack = basePath ? basePath.split('/') : [];
   for (const part of relativeUrl.split('/')) {
     if (part === '.') continue;
@@ -77,8 +103,14 @@ const resolveRelativePath = (basePath, relativeUrl) => {
     else stack.push(part);
   }
   return stack.join('/');
-};
+}
 
+/**
+ * Build a virtual file system from extracted files, creating Blob URLs for each file and rewriting HTML files to inline CSS and JS.
+ * @param {{ [key: string]: ArrayBuffer }} extractedFiles - An object where keys are file paths and values are ArrayBuffers of the file contents.
+ * @param {string} nonceAttr - The nonce attribute to be added to script tags for security.
+ * @returns {{}}
+ */
 export function buildVirtualFileSystem(extractedFiles, nonceAttr) {
   const fileUrls = {};
   const htmlFiles = {};
