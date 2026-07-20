@@ -1,5 +1,5 @@
 import { openDashboard } from '../templates/dashboard.js';
-import { openJunitReport } from '../templates/junit.js';
+import { openJunitReport } from '../templates/junit/openJUnitReport.js';
 import { extractTar, buildVirtualFileSystem, getPageNonce } from './fileSystem.js';
 
 /**

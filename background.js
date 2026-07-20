@@ -27,3 +27,14 @@ chrome.downloads.onCreated.addListener((downloadItem) => {
     });
   }
 });
+
+// Listen for requests to open a new window with the report
+chrome.runtime.onMessage.addListener((request, sender) => {
+  if (request.action === "OPEN_REPORT_WINDOW") {
+    const nextTabIndex = sender.tab ? sender.tab.index + 1 : undefined;
+    chrome.tabs.create({
+      url: chrome.runtime.getURL(request.url),
+      index: nextTabIndex
+    });
+  }
+});

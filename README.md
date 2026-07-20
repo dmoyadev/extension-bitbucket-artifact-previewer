@@ -44,7 +44,8 @@ Since this extension is built for high-performance direct inspection, you can in
 * **Permissions:**
   * `host_permissions`: Access to `bitbucket.org` artifacts API.
   * `content_scripts`: To inject the UI into the DOM.
-  * `storage`: To manage user preferences and artifact states.
+  * `downloads`: To handle artifact fetching and Blob creation.
+  * `storage`: To open a new window and write the DOM safely.
 
 
 * **Architecture:** Modularized codebase using modern ES6+ features, `async/await` for asynchronous task handling, and isolated templates for UI components.

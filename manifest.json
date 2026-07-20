@@ -9,7 +9,10 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": ["downloads"],
+  "permissions": [
+    "downloads",
+    "storage"
+  ],
   "host_permissions": [
     "https://bitbucket.org/*",
     "https://api.bitbucket.org/*"
